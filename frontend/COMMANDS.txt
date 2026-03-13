@@ -1,0 +1,51 @@
+===============================================
+  COPY THESE COMMANDS TO PUSH TO GITHUB
+===============================================
+
+STEP 1: Open Command Prompt/Terminal
+Location: d:\teks2026\REACT\my\1-pre-built-bundle\1-pre-built-bundle\myntra-clone
+
+STEP 2: Run these commands one by one:
+
+git init
+
+git config --global user.name "Mayur Jathar"
+
+git config --global user.email "jatharmayur628@gmail.com"
+
+git add .
+
+git commit -m "Initial commit: Myntra Clone - Full Stack E-Commerce with Razorpay Payment Integration"
+
+STEP 3: Create GitHub Repository
+- Go to: https://github.com/new
+- Repository name: myntra-clone
+- Description: Full-stack e-commerce application with Razorpay payment integration
+- Public repository
+- DO NOT initialize with README
+- Click "Create repository"
+
+STEP 4: Connect and Push (Replace YOUR_USERNAME with your GitHub username)
+
+git remote add origin https://github.com/YOUR_USERNAME/myntra-clone.git
+
+git branch -M main
+
+git push -u origin main
+
+===============================================
+  DONE! Your code is now on GitHub!
+===============================================
+
+Your repository URL:
+https://github.com/YOUR_USERNAME/myntra-clone
+
+===============================================
+  FOR FUTURE UPDATES
+===============================================
+
+git add .
+git commit -m "Your update message"
+git push
+
+===============================================
