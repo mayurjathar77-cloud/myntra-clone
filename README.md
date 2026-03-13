@@ -27,7 +27,7 @@ A fully functional e-commerce web application inspired by Myntra, built with Rea
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/YOUR_USERNAME/myntra-clone.git
+git clone https://github.com/mayurjathar77-cloud/myntra-clone.git
 cd myntra-clone
 ```
 
