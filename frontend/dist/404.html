@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Myntra Clone</title>
+    <script>
+        // Redirect to index.html with the current path as a query parameter
+        const path = window.location.pathname.slice(1);
+        const query = window.location.search;
+        window.location.replace('/Myntra/?p=/' + path + query);
+    </script>
+</head>
+<body>
+    <p>Redirecting...</p>
+</body>
+</html>
