@@ -119,6 +119,6 @@ app.post('/orders', async (req, res) => {
   }
 });
 
-app.listen(8081, () => {
-  console.log('Server running on http://localhost:8081');
+app.listen(process.env.PORT || 8081, () => {
+  console.log('Server running on port', process.env.PORT || 8081);
 });
