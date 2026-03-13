@@ -13,9 +13,12 @@ const FetchItems = () =>{
         const controller = new AbortController();
         const signal = controller.signal;
 
+        // Use deployed API URL or fallback to localhost for development
+        const API_BASE_URL = window.location.origin + '/api';
+
         dispatch(fetchStatusActions.markFetchingStarted());
         setTimeout (()=>{
-        fetch("http://localhost:8081/items",{signal})
+        fetch(`${API_BASE_URL}/items`,{signal})
         .then((res)=> res.json())
         .then((data) =>{
             console.log("Data received:", data);
@@ -24,6 +27,7 @@ const FetchItems = () =>{
             dispatch(itemsActions.addInitialItems(data.items));
         })
         .catch((error) => {
+            console.error("Fetch error:", error);
             dispatch(fetchStatusActions.markFetchingFinished());
         });
       },400);

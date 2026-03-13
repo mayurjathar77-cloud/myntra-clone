@@ -3,15 +3,98 @@ const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
 const Razorpay = require('razorpay');
 
-const { getStoredItems, storeItems } = require('./data/items');
-const { getProfile, storeProfile } = require('./data/profile');
-
 const app = express();
+
+// Mock data for deployment
+const mockItems = [
+  {
+    id: "001",
+    item_name: "Carlton London",
+    company: "Berrylush",
+    current_price: 606,
+    original_price: 1045,
+    discount_percentage: 42,
+    return_period: 14,
+    delivery_date: "10 Oct 2023",
+    rating: {
+      stars: 4.5,
+      count: 1400,
+    },
+    image: "images/1.jpg"
+  },
+  {
+    id: "002",
+    item_name: "CUKOO",
+    company: "CUKOO",
+    current_price: 1507,
+    original_price: 2599,
+    discount_percentage: 42,
+    return_period: 14,
+    delivery_date: "10 Oct 2023",
+    rating: {
+      stars: 4.3,
+      count: 5200,
+    },
+    image: "images/2.jpg"
+  },
+  {
+    id: "003",
+    item_name: "NUEVOSDAMAS",
+    company: "NUEVOSDAMAS",
+    current_price: 495,
+    original_price: 1599,
+    discount_percentage: 69,
+    return_period: 14,
+    delivery_date: "10 Oct 2023",
+    rating: {
+      stars: 4.1,
+      count: 249,
+    },
+    image: "images/3.jpg"
+  },
+  {
+    id: "004",
+    item_name: "ADIDAS",
+    company: "ADIDAS",
+    current_price: 999,
+    original_price: 1599,
+    discount_percentage: 38,
+    return_period: 14,
+    delivery_date: "10 Oct 2023",
+    rating: {
+      stars: 5.0,
+      count: 146,
+    },
+    image: "images/4.jpg"
+  },
+  {
+    id: "005",
+    item_name: "Roadster",
+    company: "Roadster",
+    current_price: 489,
+    original_price: 1399,
+    discount_percentage: 65,
+    return_period: 14,
+    delivery_date: "10 Oct 2023",
+    rating: {
+      stars: 4.2,
+      count: 3500,
+    },
+    image: "images/5.jpg"
+  }
+];
+
+const mockProfile = {
+  name: "Mayur Jathar",
+  email: "jatharmayur628@gmail.com",
+  phone: "+91 9876543210",
+  loyaltyPoints: 2500
+};
 
 // Razorpay Configuration
 const razorpay = new Razorpay({
-  key_id: 'rzp_test_SPuuwkN39Qy60O',
-  key_secret: 'szytEnxM1c8zF9g7rC2xbzcH'  // Replace with your actual Test Key Secret from Razorpay Dashboard
+  key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_SPuuwkN39Qy60O',
+  key_secret: process.env.RAZORPAY_KEY_SECRET || 'szytEnxM1c8zF9g7rC2xbzcH'
 });
 
 app.use(bodyParser.json({limit: '50mb'}));
@@ -25,48 +108,22 @@ app.use((req, res, next) => {
 });
 
 app.get('/items', async (req, res) => {
-  const storedItems = await getStoredItems();
-  await new Promise((resolve, reject) => setTimeout(() => resolve(), 400));
-  res.json({ items: storedItems });
+  await new Promise((resolve) => setTimeout(() => resolve(), 400));
+  res.json({ items: mockItems });
 });
 
 app.get('/items/:id', async (req, res) => {
-  const storedItems = await getStoredItems();
-  const item = storedItems.find((item) => item.id === req.params.id);
+  const item = mockItems.find((item) => item.id === req.params.id);
   res.json({ item });
 });
 
-app.post('/items', async (req, res) => {
-  const existingItems = await getStoredItems();
-  const itemData = req.body;
-  const newItem = {
-    ...itemData,
-    id: Math.random().toString(),
-  };
-  const updatedItems = [newItem, ...existingItems];
-  await storeItems(updatedItems);
-  res.status(201).json({ message: 'Stored new item.', item: newItem });
-});
-
 app.get('/profile', async (req, res) => {
-  try {
-    const profile = await getProfile();
-    res.json({ profile });
-  } catch (error) {
-    console.error('Error fetching profile:', error);
-    res.status(500).json({ error: 'Failed to fetch profile' });
-  }
+  res.json({ profile: mockProfile });
 });
 
 app.put('/profile', async (req, res) => {
-  try {
-    const profileData = req.body;
-    await storeProfile(profileData);
-    res.json({ message: 'Profile updated successfully', profile: profileData });
-  } catch (error) {
-    console.error('Error saving profile:', error);
-    res.status(500).json({ error: 'Failed to save profile' });
-  }
+  const profileData = req.body;
+  res.json({ message: 'Profile updated successfully', profile: profileData });
 });
 
 app.post('/orders', async (req, res) => {
@@ -76,42 +133,10 @@ app.post('/orders', async (req, res) => {
       ...orderData,
       id: 'ORD' + Date.now(),
     };
-    console.log('Order placed:', order);
-
-    // Create test account (only for development)
-    let testAccount = await nodemailer.createTestAccount();
-
-    // Send email using Ethereal (test email service)
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
-      port: 587,
-      secure: false,
-      auth: {
-        user: testAccount.user,
-        pass: testAccount.pass
-      }
-    });
-
-    const itemsList = order.items.map(item => 
-      `${item.item_name} - ${item.company} (₹${item.current_price})`
-    ).join('\n');
-
-    const mailOptions = {
-      from: testAccount.user,
-      to: 'jatharmayur628@gmail.com',
-      subject: `New Order Placed - ${order.id}`,
-      text: `Order Details:\n\nOrder ID: ${order.id}\nCustomer: ${order.customerName}\nEmail: ${order.customerEmail}\nTotal Amount: ₹${order.totalAmount}\nPayment ID: ${order.paymentId}\nOrder Date: ${new Date(order.orderDate).toLocaleString()}\n\nItems:\n${itemsList}\n\nStatus: ${order.status}`
-    };
-
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Email sent successfully');
-    console.log('Preview URL:', nodemailer.getTestMessageUrl(info));
-    console.log('Check email at: https://ethereal.email/messages');
 
     res.status(201).json({ 
       message: 'Order placed successfully', 
-      order,
-      emailPreview: nodemailer.getTestMessageUrl(info)
+      order
     });
   } catch (error) {
     console.error('Error placing order:', error);
@@ -122,3 +147,5 @@ app.post('/orders', async (req, res) => {
 app.listen(process.env.PORT || 8081, () => {
   console.log('Server running on port', process.env.PORT || 8081);
 });
+
+module.exports = app;
